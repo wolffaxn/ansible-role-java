@@ -1,8 +1,5 @@
 ---
-# file: ansible-role-java/tests/test.yml
-#
-
 - hosts: localhost
   remote_user: root
   roles:
-    - role: ansible-role-java
+    - ansible-role-java
