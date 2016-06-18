@@ -15,8 +15,11 @@ Available variables are listed below, along with default values:
     java_version_build: 14
 
     java_download_dir: /tmp
-    java_download_cleanup: false
+    java_download_cleanup: true
     java_install_dir: /usr/java
+    java_install_jce: true
+
+    java_set_java_home: true
 
 ## Dependencies
 
