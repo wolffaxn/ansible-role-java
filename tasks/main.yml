@@ -1,0 +1,81 @@
+---
+- name: assert platform is supported
+  assert:
+    that:
+      - ansible_architecture in ['x86_64']
+      - ansible_os_family in ['RedHat']
+
+- name: set java os
+  set_fact:
+    jdk_os: linux
+    when: ansible_system == 'Linux'
+
+- name: set java architecture
+  set_fact:
+    jdk_arch: x64
+    when: ansible_architecture == 'x86_64'
+
+- name: set jdk version, if necessary
+  set_fact:
+    jdk_version: "1.{{ java_version }}.0_{{ java_version_update }}"
+  when: jdk_version is not defined
+
+- name: set distribution file name, if necessary
+  set_fact:
+    jdk_dist_file: "jdk-{{ java_version }}u{{ java_version_update }}-{{ jdk_os }}-{{ jdk_arch }}"
+  when: jdk_dist_file is not defined
+
+- name: set distribution download url, if necessary
+  set_fact:
+    jdk_dist_url: "{{ oracle_mirror_base }}/{{ java_version }}u{{ java_version_update }}-b{{ java_version_build }}"
+  when: jdk_dist_url is not defined
+
+- name: load version specific variables
+  include_vars: "versions/{{ jdk_version }}.yml"
+
+- name: set jdk checksum, if necessary
+  set_fact:
+    jdk_checksum: "{{ jdk[jdk_os][jdk_arch].tar.checksum }}"
+  when: jdk_checksum is not defined
+
+- name: ensure download directory exists
+  file: path="{{ java_download_dir }}" state=directory
+
+- name: get JDK tarball (tar.gz)
+  get_url:
+    url: "{{ jdk_dist_url }}/{{ jdk_dist_file }}.tar.gz"
+    headers: 'Cookie:oraclelicense=accept-securebackup-cookie'
+    checksum: "{{ jdk_checksum }}"
+    dest: "{{ java_download_dir }}/{{ jdk_dist_file }}.tar.gz"
+    owner: root
+    group: root
+    mode: "u=rwx,go=rx"
+  register: java_redis_get
+  until: "'OK' in java_redis_get.msg or 'file already exists' in java_redis_get.msg"
+  retries: "{{ download_retries }}"
+  delay: "{{ download_delay }}"
+
+- name: ensure installation directory exists
+  file:
+    path: "{{ java_install_dir }}/jdk{{ jdk_version }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "u=rwx,go=rx"
+
+- name: install JDK tarball (tar.gz)
+  unarchive:
+    src: "{{ java_download_dir }}/{{ jdk_dist_file }}.tar.gz"
+    dest: "{{ java_install_dir }}"
+    owner: root
+    group: root
+    mode: "go-w"
+    copy: no
+
+- name: remove temporary downloaded files, if requested
+  file: path="{{ java_download_dir }}/{{ item }}" state=absent
+  with_items:
+    - "{{ jdk_dist_file }}.rpm"
+    - "{{ jdk_dist_file }}.tar.gz"
+  ignore_errors: true
+  when: java_download_cleanup

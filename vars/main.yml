@@ -1,2 +1,4 @@
 ---
-oracle_jdk_mirror_base: "http://download.oracle.com/otn-pub/java/jdk"
+oracle_mirror_base: "http://download.oracle.com/otn-pub/java/jdk"
+download_retries: 5
+download_delay: 5
