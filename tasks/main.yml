@@ -13,7 +13,7 @@
 - name: set java architecture
   set_fact:
     jdk_arch: x64
-    when: ansible_architecture == 'x86_64'
+  when: ansible_architecture == 'x86_64'
 
 - name: set jdk version, if necessary
   set_fact:
