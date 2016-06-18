@@ -15,25 +15,25 @@
     jdk_arch: x64
   when: ansible_architecture == 'x86_64'
 
-- name: set jdk version, if necessary
+- name: set JDK version, if necessary
   set_fact:
     jdk_version: "1.{{ java_version }}.0_{{ java_version_update }}"
   when: jdk_version is not defined
 
-- name: set distribution file name, if necessary
+- name: set JDK file name, if necessary
   set_fact:
     jdk_dist_file: "jdk-{{ java_version }}u{{ java_version_update }}-{{ jdk_os }}-{{ jdk_arch }}"
   when: jdk_dist_file is not defined
 
-- name: set distribution download url, if necessary
+- name: set JDK download url, if necessary
   set_fact:
-    jdk_dist_url: "{{ oracle_mirror_base }}/{{ java_version }}u{{ java_version_update }}-b{{ java_version_build }}"
+    jdk_dist_url: "{{ oracle_mirror_base }}/jdk/{{ java_version }}u{{ java_version_update }}-b{{ java_version_build }}"
   when: jdk_dist_url is not defined
 
 - name: load version specific variables
   include_vars: "versions/{{ jdk_version }}.yml"
 
-- name: set jdk checksum, if necessary
+- name: set JDK checksum, if necessary
   set_fact:
     jdk_checksum: "{{ jdk[jdk_os][jdk_arch].tar.checksum }}"
   when: jdk_checksum is not defined
@@ -74,6 +74,56 @@
 
 - block:
 
+  - name: install 'unzip'
+    package: name=unzip state=present
+
+  - name: set JCE file name, if necessary
+    set_fact:
+      jce_dist_file: "jce_policy-{{ java_version }}"
+    when: jce_dist_file is not defined
+
+  - name: set JCE download url, if necessary
+    set_fact:
+      jce_dist_url: "{{ oracle_mirror_base }}/jce/{{ java_version }}"
+    when: jce_dist_url is not defined
+
+  - name: set JCE dist folder, if necessary
+    set_fact:
+      jce_dist_folder: "UnlimitedJCEPolicyJDK8"
+    when: jce_dist_folder is not defined
+
+  - name: get JCE archive
+    get_url:
+      url: "{{ jce_dist_url }}/{{ jce_dist_file }}.zip"
+      headers: 'Cookie:oraclelicense=accept-securebackup-cookie'
+      dest: "{{ java_download_dir }}/{{ jce_dist_file }}.zip"
+      owner: root
+      group: root
+      mode: "u=rwx,go=rx"
+    register: java_redis_get
+    until: "'OK' in java_redis_get.msg or 'file already exists' in java_redis_get.msg"
+    retries: "{{ download_retries }}"
+    delay: "{{ download_delay }}"
+
+  - name: install JCE
+    unarchive:
+      src: "{{ java_download_dir }}/{{ jce_dist_file }}.zip"
+      dest: "{{ java_download_dir }}"
+      copy: no
+
+  - name: install JCE policy files
+    copy:
+      src: "{{ java_download_dir }}/{{ jce_dist_folder }}/{{ item }}"
+      dest: "{{ java_install_dir }}/jdk{{ jdk_version }}/jre/lib/security/{{ item }}"
+      remote_src: true
+    with_items:
+      - local_policy.jar
+      - US_export_policy.jar
+
+  when: java_install_jce
+
+- block:
+
   - name: ensure '/etc/profile.d' exists
     file: path="/etc/profile.d" state=directory
 
@@ -85,6 +135,7 @@
 - name: remove temporary downloaded files, if requested
   file: path="{{ java_download_dir }}/{{ item }}" state=absent
   with_items:
+    - "{{ jce_dist_file }}.zip"    
     - "{{ jdk_dist_file }}.rpm"
     - "{{ jdk_dist_file }}.tar.gz"
   ignore_errors: true
