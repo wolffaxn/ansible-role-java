@@ -8,7 +8,7 @@
 - name: set java os
   set_fact:
     jdk_os: linux
-    when: ansible_system == 'Linux'
+  when: ansible_system == 'Linux'
 
 - name: set java architecture
   set_fact:
