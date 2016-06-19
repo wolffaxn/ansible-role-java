@@ -124,6 +124,26 @@
 
 - block:
 
+  - name: create default link
+    file:
+      src: "{{ java_install_dir }}/jdk{{ jdk_version }}"
+      dest: "{{ java_install_dir }}/{{ java_link_default }}"
+      state: link
+
+  - name: create alternatives links
+    alternatives:
+      name: "{{ item }}"
+      link: "/usr/bin/{{ item }}"
+      path: "{{ java_install_dir }}/{{ java_link_default }}/bin/{{ item }}"
+    with_items:
+      - java
+      - javac
+      - jar
+
+  when: java_link_binaries
+
+- block:
+
   - name: ensure '/etc/profile.d' exists
     file: path="/etc/profile.d" state=directory
 
