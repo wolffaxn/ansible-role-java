@@ -18,6 +18,8 @@ Available variables are listed below, along with default values:
     java_download_cleanup: true
     java_install_dir: /usr/java
     java_install_jce: true
+    java_link_default: default
+    java_link_binaries: true
 
     java_set_java_home: true
 
