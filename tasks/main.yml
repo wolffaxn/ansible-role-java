@@ -74,7 +74,7 @@
 
 - block:
 
-  - name: install 'unzip'
+  - name: install 'unzip', if necessary
     package: name=unzip state=present
 
   - name: set JCE file name, if necessary
@@ -135,7 +135,8 @@
 - name: remove temporary downloaded files, if requested
   file: path="{{ java_download_dir }}/{{ item }}" state=absent
   with_items:
-    - "{{ jce_dist_file }}.zip"    
+    - "{{ jce_dist_folder }}"
+    - "{{ jce_dist_file }}.zip"
     - "{{ jdk_dist_file }}.rpm"
     - "{{ jdk_dist_file }}.tar.gz"
   ignore_errors: true
