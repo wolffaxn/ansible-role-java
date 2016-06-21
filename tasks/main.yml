@@ -39,14 +39,14 @@
   when: jdk_checksum is not defined
 
 - name: ensure download directory exists
-  file: path="{{ java_download_dir }}" state=directory
+  file: path="{{ java_download_path }}" state=directory
 
 - name: get JDK tarball (tar.gz)
   get_url:
     url: "{{ jdk_dist_url }}/{{ jdk_dist_file }}.tar.gz"
     headers: 'Cookie:oraclelicense=accept-securebackup-cookie'
     checksum: "{{ jdk_checksum }}"
-    dest: "{{ java_download_dir }}/{{ jdk_dist_file }}.tar.gz"
+    dest: "{{ java_download_path }}/{{ jdk_dist_file }}.tar.gz"
     owner: root
     group: root
     mode: "u=rwx,go=rx"
@@ -57,7 +57,7 @@
 
 - name: ensure installation directory exists
   file:
-    path: "{{ java_install_dir }}/jdk{{ jdk_version }}"
+    path: "{{ java_install_path }}/jdk{{ jdk_version }}"
     state: directory
     owner: root
     group: root
@@ -65,15 +65,14 @@
 
 - name: install JDK tarball (tar.gz)
   unarchive:
-    src: "{{ java_download_dir }}/{{ jdk_dist_file }}.tar.gz"
-    dest: "{{ java_install_dir }}"
+    src: "{{ java_download_path }}/{{ jdk_dist_file }}.tar.gz"
+    dest: "{{ java_install_path }}"
     owner: root
     group: root
     mode: "go-w"
     copy: no
 
 - block:
-
   - name: install 'unzip', if necessary
     package: name=unzip state=present
 
@@ -96,7 +95,7 @@
     get_url:
       url: "{{ jce_dist_url }}/{{ jce_dist_file }}.zip"
       headers: 'Cookie:oraclelicense=accept-securebackup-cookie'
-      dest: "{{ java_download_dir }}/{{ jce_dist_file }}.zip"
+      dest: "{{ java_download_path }}/{{ jce_dist_file }}.zip"
       owner: root
       group: root
       mode: "u=rwx,go=rx"
@@ -107,14 +106,14 @@
 
   - name: install JCE
     unarchive:
-      src: "{{ java_download_dir }}/{{ jce_dist_file }}.zip"
-      dest: "{{ java_download_dir }}"
+      src: "{{ java_download_path }}/{{ jce_dist_file }}.zip"
+      dest: "{{ java_download_path }}"
       copy: no
 
   - name: install JCE policy files
     copy:
-      src: "{{ java_download_dir }}/{{ jce_dist_folder }}/{{ item }}"
-      dest: "{{ java_install_dir }}/jdk{{ jdk_version }}/jre/lib/security/{{ item }}"
+      src: "{{ java_download_path }}/{{ jce_dist_folder }}/{{ item }}"
+      dest: "{{ java_install_path }}/jdk{{ jdk_version }}/jre/lib/security/{{ item }}"
       remote_src: true
     with_items:
       - local_policy.jar
@@ -123,18 +122,17 @@
   when: java_install_jce
 
 - block:
-
   - name: create default link
     file:
-      src: "{{ java_install_dir }}/jdk{{ jdk_version }}"
-      dest: "{{ java_install_dir }}/{{ java_link_default }}"
+      src: "{{ java_install_path }}/jdk{{ jdk_version }}"
+      dest: "{{ java_install_path }}/{{ java_link_default }}"
       state: link
 
   - name: create alternatives links
     alternatives:
       name: "{{ item }}"
       link: "/usr/bin/{{ item }}"
-      path: "{{ java_install_dir }}/{{ java_link_default }}/bin/{{ item }}"
+      path: "{{ java_install_path }}/{{ java_link_default }}/bin/{{ item }}"
     with_items:
       - java
       - javac
@@ -144,7 +142,6 @@
   when: java_link_binaries
 
 - block:
-
   - name: ensure '/etc/profile.d' exists
     file: path="/etc/profile.d" state=directory
 
@@ -154,7 +151,7 @@
   when: java_set_java_home
 
 - name: remove temporary downloaded files, if requested
-  file: path="{{ java_download_dir }}/{{ item }}" state=absent
+  file: path="{{ java_download_path }}/{{ item }}" state=absent
   with_items:
     - "{{ jce_dist_folder }}"
     - "{{ jce_dist_file }}.zip"
