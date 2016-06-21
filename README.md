@@ -42,7 +42,7 @@ For RHEL / CentOS
 ```
 ## License
 
-MIT
+Licensed under the MIT License. See the [LICENSE file](LICENSE) for details.
 
 ## Author Information
 
