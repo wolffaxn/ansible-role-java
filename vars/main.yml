@@ -1,4 +1,6 @@
 ---
+# download mirror
 oracle_mirror_base: "http://download.oracle.com/otn-pub/java"
+# download settings
 download_retries: 5
 download_delay: 5

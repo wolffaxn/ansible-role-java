@@ -30,7 +30,7 @@
     jdk_dist_url: "{{ oracle_mirror_base }}/jdk/{{ java_version }}u{{ java_version_update }}-b{{ java_version_build }}"
   when: jdk_dist_url is not defined
 
-- name: load version specific variables
+- name: include version-specific variables
   include_vars: "versions/{{ jdk_version }}.yml"
 
 - name: set JDK checksum, if necessary
@@ -126,6 +126,7 @@
     file:
       src: "{{ java_install_path }}/jdk{{ jdk_version }}"
       dest: "{{ java_install_path }}/{{ java_link_default }}"
+      force: true
       state: link
 
   - name: create alternatives links
@@ -146,7 +147,7 @@
     file: path="/etc/profile.d" state=directory
 
   - name: export JAVA_HOME
-    template: src=java.sh.j2 dest=/etc/profile.d/java_home.sh mode=a+x
+    template: src=java.sh.j2 dest=/etc/profile.d/java.sh mode=a+x
 
   when: java_set_java_home
 
