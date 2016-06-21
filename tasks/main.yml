@@ -5,14 +5,14 @@
       - ansible_architecture in ['x86_64']
       - ansible_os_family in ['RedHat']
 
-- name: set java os
+- name: set os name
   set_fact:
-    jdk_os: linux
+    os_name: linux
   when: ansible_system == 'Linux'
 
-- name: set java architecture
+- name: set os architecture
   set_fact:
-    jdk_arch: x64
+    os_arch: x64
   when: ansible_architecture == 'x86_64'
 
 - name: set JDK version, if necessary
@@ -22,7 +22,7 @@
 
 - name: set JDK file name, if necessary
   set_fact:
-    jdk_dist_file: "jdk-{{ java_version }}u{{ java_version_update }}-{{ jdk_os }}-{{ jdk_arch }}"
+    jdk_dist_file: "jdk-{{ java_version }}u{{ java_version_update }}-{{ os_name }}-{{ os_arch }}"
   when: jdk_dist_file is not defined
 
 - name: set JDK download url, if necessary
@@ -35,7 +35,7 @@
 
 - name: set JDK checksum, if necessary
   set_fact:
-    jdk_checksum: "{{ jdk[jdk_os][jdk_arch].tar.checksum }}"
+    jdk_checksum: "{{ jdk[os_name][os_arch].tar.checksum }}"
   when: jdk_checksum is not defined
 
 - name: ensure download directory exists
