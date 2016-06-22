@@ -137,6 +137,7 @@
     with_items:
       - java
       - javac
+      - javah
       - javaws
       - jar
 
