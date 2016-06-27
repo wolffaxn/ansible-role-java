@@ -14,9 +14,9 @@ Available variables are listed below, along with default values:
     java_version_update: 92
     java_version_build: 14
 
-    java_download_path: /tmp
+    java_download_dir: /tmp
     java_download_cleanup: true
-    java_install_path: /usr/java
+    java_install_dir: /usr/java
     java_install_jce: true
     java_link_default: default
     java_link_binaries: true
