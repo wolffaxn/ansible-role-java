@@ -1,0 +1,9 @@
+---
+# checksum for the redistributable package
+jdk:
+  linux:
+    x64:
+      rpm:
+        checksum: sha256:bd9f42e0725b32391c72f2800cdbb8a0c7db0ab2429b5f9e5bcf14b0090470a2
+      tar:
+        checksum: sha256:97e30203f1aef324a07c94d9d078f5d19bb6c50e638e4492722debca588210bc
