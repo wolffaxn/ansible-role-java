@@ -13,8 +13,8 @@ None.
 Available variables are listed below, along with default values:
 
     java_version: 8
-    java_version_update: 121
-    java_version_build: 13
+    java_version_update: 131
+    java_version_build: 11
 
     java_download_dir: /tmp
     java_download_cleanup: true
