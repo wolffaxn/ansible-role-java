@@ -3,6 +3,19 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GitHub last commit (branch)](https://img.shields.io/github/last-commit/wolffaxn/ansible-role-java/master.svg)](https://github.com/wolffaxn/ansible-role-java)
 
+**Table of Contents**
+
+<!-- toc -->
+
+- [About](#about)
+- [Requirements](#requirements)
+- [Role Variables](#role-variables)
+- [Dependencies](#dependencies)
+- [Example Playbook](#example-playbook)
+- [License](#license)
+
+<!-- tocstop -->
+
 ## About
 
 Installs Java for RedHat/CentOS linux servers.
