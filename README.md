@@ -1,6 +1,9 @@
 # Ansible Role - Java
 
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/wolffaxn/ansible-role-java/master/LICENSE)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![GitHub last commit (branch)](https://img.shields.io/github/last-commit/wolffaxn/ansible-role-java/master.svg)](https://github.com/wolffaxn/ansible-role-java)
+
+## About
 
 Installs Java for RedHat/CentOS linux servers.
 
